@@ -13,7 +13,7 @@ prompt_tmpl = (
 
 csv_path = 'Assignment_02_product_dataset.csv'
 df_products = pd.read_csv(csv_path)
-
+print(df_products)
 
 def batch_generate(
     sample_df: pd.DataFrame,
@@ -69,7 +69,7 @@ def add_cost_columns(df, input_price_per_m: float, output_price_per_m: float):
 YOUR_MODEL_INPUT_PRICE_PER_M = 0
 YOUR_MODEL_OUTPUT_PRICE_PER_M = 0
 
-outputs_df = batch_generate(df_products, call_gemini)  # NOTE: change model function as needed
+outputs_df = batch_generate(df_products.head(), call_openai)  # NOTE: change model function as needed
 
 # Add rating columns (good/ok/bad)
 rating_cols = ["fluency", "grammar", "tone", "length", "grounding", "latency", "cost", "final_score"]

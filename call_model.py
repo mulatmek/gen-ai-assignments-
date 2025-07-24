@@ -12,46 +12,28 @@ gemini_api_key = os.getenv("GOOGLE_API_KEY")
 client = OpenAI(api_key=open_api_key)
 
 def call_openai(prompt: str, model_name: str = "gpt-3.5-turbo") -> dict:
-    """
-    Call OpenAI Chat API and return generated text and usage metrics.
+    import time
+    from openai import OpenAI
+    client = OpenAI()  # make sure you set OPENAI_API_KEY in your env
 
-    Args:
-        prompt (str): The user prompt.
-        model_name (str): OpenAI model to use (default: "gpt-3.5-turbo").
-        api_key
-    Returns:
-        dict: {
-            "text": generated description (str),
-            "latency_ms": latency in milliseconds (float),
-            "input_tokens": tokens sent (int),
-            "output_tokens": tokens received (int)
-        }
-        :param model_name:
-        :param prompt:
-        :param api_key:
-    """
-
-
-    # Measure start time
     start_time = time.time()
 
     try:
-        response = client.chat.completions.create(model=model_name,
-        messages=[
-            {"role": "system", "content": "You are a skilled copywriter."},
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.7)
+        response = client.chat.completions.create(
+            model=model_name,
+            messages=[
+                {"role": "system", "content": "You are a skilled copywriter."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7
+        )
 
-        # Measure end time and calculate latency
         end_time = time.time()
         latency_ms = (end_time - start_time) * 1000
 
-        # Extract response content and usage stats
         message = response.choices[0].message.content.strip()
-        usage = response.get("usage", {})
-        input_tokens = usage.get("prompt_tokens", 0)
-        output_tokens = usage.get("completion_tokens", 0)
+        input_tokens = response.usage.prompt_tokens
+        output_tokens = response.usage.completion_tokens
 
         return {
             "text": message,
@@ -68,6 +50,7 @@ def call_openai(prompt: str, model_name: str = "gpt-3.5-turbo") -> dict:
             "input_tokens": 0,
             "output_tokens": 0
         }
+
 
 
 def call_gemini(prompt: str, model_name: str = "gemini-pro", api_key: str = gemini_api_key) -> dict:
