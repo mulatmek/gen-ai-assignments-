@@ -83,4 +83,27 @@ xlsx_path = "assignment_03_evaluation_sheet.xlsx"
 outputs_df = add_cost_columns(outputs_df, YOUR_MODEL_INPUT_PRICE_PER_M, YOUR_MODEL_OUTPUT_PRICE_PER_M)
 
 outputs_df.to_excel(xlsx_path, index=False)
-print(f"Saved evaluation sheet → {xlsx_path} with {len(outputs_df)} rows")
+prompt_tmpl = (
+    "You are an evaluator. Based on the following product description, "
+    "assess its quality across the following parameters:\n"
+    "Product Description:\n\"\"\"\n{generated_description}\n\"\"\"\n\n"
+    "For each parameter, provide a grade: Good, OK, or Bad.\n"
+    "Respond in the format:\n"
+    "fluency: <Good/OK/Bad>\n"
+    "grammar: <Good/OK/Bad>\n"
+    "tone: <Good/OK/Bad>\n"
+    "length: <Good/OK/Bad>\n"
+    "grounding: <Good/OK/Bad>\n"
+    "latency: <Good/OK/Bad>\n"
+    "cost: <Good/OK/Bad>\n"
+    "final_score: <Good/OK/Bad>"
+)
+
+
+
+llm_df = batch_generate(outputs_df.head(), call_openai, prompt_template=prompt_tmpl)
+# llm as a judge
+
+llm_df.to_excel("llm_evaluation_sheet.xlsx", index=False)
+
+print(llm_df)
